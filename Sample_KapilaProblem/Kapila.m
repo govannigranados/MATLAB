@@ -1,10 +1,23 @@
 function [y,TIME]=Kapila(a,b,e,l0,Tend,Delt,method)
+%Demonstrates how to use external files for general MATLAB time integration
+%==================================================================
+%Run the following command: Kapila(1.0,0.5,1e-2,0.5,10,1e-2,'BDF2')
+%==================================================================
+%a              The amount of the first species
+%b              The amount of the second species, generates z
+%e              A stiffness factor, the smaller the value the stiffer
+%l0             A thermal coefficient
+%Tend           Simulation final time
+%Delt           TimeStep size
+%method         Desired time integration method, 'method' format.
+
 %e is epsilon
 L=l0*exp(1/e);
 z=e*b;
 z=5e-3;
 y0=[1,a-z,z]; % theta(0),y(0),z(0)
 y=y0;
+%Set up the anonymous function for the solver
 if method=="15s"
     F=@(t,y)[rhs(t,y,e,L)]';
 elseif method=="45"
@@ -56,8 +69,19 @@ xlabel('time')
 ylabel('real part')
 legend({'E1','E2','E3'});
 
-
+%//= ___=====================================
+%// |  _) _ _  ___  __  _-_  _  ___  ___  __
+%// |  _)| | ||   |/ _)(. .)[_]/ _ \|   |( .)
+%// |_|  |___||_|_|\__) |_| |_|\___/|_|_|(`_)
+%//===========================================
 function yd=rhs(t,y,e,L)
+%-----------------------------
+%A handle for the forcing term
+%-----------------------------
+%t      the time variable
+%y      the state variable
+%e      the stiffness variable
+%L      the thermal coefficient
 
 yd=zeros(size(y)-1);
 
@@ -69,7 +93,13 @@ yd(3)=-yd(2)-yd(1);
 
 % y = [theta,y,z]
 function J=jac(~,y,e,L)
-
+%-----------------------------
+%A handle for the Jacobian forcing term
+%-----------------------------
+%t      the time variable.  Not used so ~
+%y      the state variable
+%e      the stiffness variable
+%L      the thermal coefficient
 n=length(y);
 J=zeros(n,n);
 
